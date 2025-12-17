@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚛️ Quantum Atomic Swaps v2.0</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚛️</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>⚛️ Quantum Atomic Swaps</h1>
+            <p class="subtitle">Cross-chain atomic swaps with Winternitz One-Time Signatures</p>
+            <div class="badges">
+                <span class="badge badge-green">🔐 Quantum-Safe</span>
+                <span class="badge badge-blue">BSV ↔ BTC ↔ SOL</span>
+                <span class="badge badge-purple">v2.0</span>
+            </div>
+        </header>
+
+        <!-- Swap Wizard -->
+        <section class="card" id="swapWizard">
+            <h2>🔄 Create New Swap</h2>
+            
+            <div class="swap-form">
+                <div class="row">
+                    <div class="col">
+                        <label>From Chain</label>
+                        <select id="fromChain">
+                            <option value="BSV">BSV (Bitcoin SV)</option>
+                            <option value="BTC">BTC (Bitcoin)</option>
+                            <option value="SOL">SOL (Solana)</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>To Chain</label>
+                        <select id="toChain">
+                            <option value="BTC">BTC (Bitcoin)</option>
+                            <option value="BSV">BSV (Bitcoin SV)</option>
+                            <option value="SOL">SOL (Solana)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>From Amount (<span id="fromUnit">satoshis</span>)</label>
+                        <input type="number" id="fromAmount" placeholder="100000">
+                    </div>
+                    <div class="col">
+                        <label>To Amount (<span id="toUnit">satoshis</span>)</label>
+                        <input type="number" id="toAmount" placeholder="100000">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>Your Address on <span id="toChainLabel">BTC</span> (receive)</label>
+                        <input type="text" id="toAddress" placeholder="Enter your receiving address">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>Your Address on <span id="fromChainLabel">BSV</span> (refund)</label>
+                        <input type="text" id="refundAddress" placeholder="Enter your refund address">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="initiateSwap()">
+                    <span class="btn-icon">⚛️</span>
+                    Create Quantum-Safe Swap
+                </button>
+            </div>
+        </section>
+
+        <!-- Swap Result -->
+        <section class="card hidden" id="swapResult">
+            <h2>✅ Swap Created</h2>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ CRITICAL:</strong> Save the secrets below! You need them to claim or refund your funds.
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Swap ID</label>
+                    <div class="copyable" id="swapId" onclick="copyText(this)">...</div>
+                </div>
+                <div class="info-item">
+                    <label>Status</label>
+                    <div id="swapStatus">...</div>
+                </div>
+                <div class="info-item">
+                    <label>Swap Hash (share with counterparty)</label>
+                    <div class="copyable mono" id="swapHash" onclick="copyText(this)">...</div>
+                </div>
+            </div>
+            
+            <details class="secrets-section">
+                <summary>🔑 Your Secrets (SAVE THESE!)</summary>
+                <div class="secrets-grid">
+                    <div class="secret-item">
+                        <label>Swap Secret</label>
+                        <textarea readonly id="swapSecret"></textarea>
+                        <button class="btn btn-small" onclick="copyText(document.getElementById('swapSecret'))">📋 Copy</button>
+                    </div>
+                    <div class="secret-item">
+                        <label>Refund Secret</label>
+                        <textarea readonly id="refundSecret"></textarea>
+                        <button class="btn btn-small" onclick="copyText(document.getElementById('refundSecret'))">📋 Copy</button>
+                    </div>
+                    <div class="secret-item">
+                        <label>Claim Secret</label>
+                        <textarea readonly id="claimSecret"></textarea>
+                        <button class="btn btn-small" onclick="copyText(document.getElementById('claimSecret'))">📋 Copy</button>
+                    </div>
+                </div>
+            </details>
+            
+            <div class="next-steps">
+                <h3>Next Steps:</h3>
+                <ol>
+                    <li>Share the <strong>Swap ID</strong> and <strong>Swap Hash</strong> with your counterparty</li>
+                    <li>Wait for them to join the swap</li>
+                    <li>Once they join, you'll see funding instructions</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Join Swap -->
+        <section class="card">
+            <h2>🤝 Join Existing Swap</h2>
+            
+            <div class="swap-form">
+                <div class="row">
+                    <div class="col">
+                        <label>Swap ID</label>
+                        <input type="text" id="joinSwapId" placeholder="qswap_...">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>Your Receiving Address</label>
+                        <input type="text" id="joinToAddress" placeholder="Address to receive funds">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>Your Refund Address</label>
+                        <input type="text" id="joinRefundAddress" placeholder="Address for refund if timeout">
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="joinSwap()">
+                    <span class="btn-icon">🤝</span>
+                    Join Swap
+                </button>
+            </div>
+        </section>
+
+        <!-- Check Swap Status -->
+        <section class="card">
+            <h2>📊 Check Swap Status</h2>
+            
+            <div class="swap-form">
+                <div class="row">
+                    <div class="col">
+                        <label>Swap ID</label>
+                        <input type="text" id="checkSwapId" placeholder="qswap_...">
+                    </div>
+                </div>
+                
+                <button class="btn btn-outline" onclick="checkStatus()">
+                    <span class="btn-icon">🔍</span>
+                    Check Status
+                </button>
+            </div>
+            
+            <div class="hidden" id="statusResult">
+                <pre id="statusJson"></pre>
+            </div>
+        </section>
+
+        <!-- Security Info -->
+        <section class="card card-info">
+            <h2>🔒 Security Model</h2>
+            
+            <div class="security-grid">
+                <div class="security-item">
+                    <h3>⚛️ Quantum Safe</h3>
+                    <p>Uses Winternitz One-Time Signatures (WOTS) which are resistant to quantum computer attacks. No ECDSA vulnerabilities.</p>
+                </div>
+                <div class="security-item">
+                    <h3>🔗 BSV Bare Scripts</h3>
+                    <p>BSV Genesis compliant - uses bare scripts instead of deprecated P2SH. UTXOs are looked up by script hash.</p>
+                </div>
+                <div class="security-item">
+                    <h3>⏰ Timelock Protection</h3>
+                    <p>All swaps have timelocks (CHECKLOCKTIMEVERIFY). You can always refund after timeout if the swap fails.</p>
+                </div>
+                <div class="security-item">
+                    <h3>🔐 Hash-Lock Security</h3>
+                    <p>SHA256 hash-locks bind secrets to transactions. 1024-byte Winternitz preimages cannot be brute-forced.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>Quantum Atomic Swaps v2.0 | <a href="/api" target="_blank">API Docs</a></p>
+            <p class="warning">⚠️ P2SH addresses (3xxx) do NOT work on BSV mainnet</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
