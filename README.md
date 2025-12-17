@@ -1,4 +1,5 @@
-# ⚛️ UNDER CONSTRUCTION UNDER CONSTRUCTION Quantum Atomic Swaps v2.0 UNDER CONSTRUCTION 
+# ⚛️ Quantum Atomic Swaps v2.0 
+# UNDER CONSTRUCTION UNDER CONSTRUCTION UNDER CONSTRUCTION 
 # UNDER CONSTRUCTION UNDER CONSTRUCTION UNDER CONSTRUCTION
 
 Cross-chain atomic swaps with **Winternitz One-Time Signatures** for quantum resistance.
