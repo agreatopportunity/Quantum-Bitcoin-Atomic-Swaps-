@@ -1,6 +1,6 @@
+# UNDER CONSTRUCTION FOR DEVELOPEMENT UNDER CONSTRUCTION UNDER CONSTRUCTION
+
 # ⚛️ Quantum Atomic Swaps v2.0 
-# UNDER CONSTRUCTION UNDER CONSTRUCTION UNDER CONSTRUCTION 
-# UNDER CONSTRUCTION UNDER CONSTRUCTION UNDER CONSTRUCTION
 
 Cross-chain atomic swaps with **Winternitz One-Time Signatures** for quantum resistance.
 
@@ -59,7 +59,7 @@ BTC still uses P2SH normally.
 
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/quantum-atomic-swaps.git
+git clone 
 cd quantum-atomic-swaps
 
 # Install dependencies
